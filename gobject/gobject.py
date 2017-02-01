@@ -1,4 +1,6 @@
-from enum import Enum
+'''gobject.py'''
+
+from .exception import Status, UnsupportedDataTypeError
 
 
 class Location(object):
@@ -40,7 +42,13 @@ class AddressComponent(object):
             return False
 
 
-class Bound(object):
+class GeoPair(object):
+    '''Wraps two named coordinate pairs.
+
+    Bounds and viewport is essentially one data structure with different names.
+    This data holds two coordinates: northeas and southwest.
+    '''
+
     def __init__(self, northeast, southwest):
         self.northeast = Location(northeast)
         self.southwest = Location(southwest)
@@ -61,33 +69,26 @@ class Bound(object):
 
 class Gobject(object):
     def __init__(self, data):
+        '''
+        Args:
+            data: google geoservice API response in form of JSON string or object
+        
+        Raises:
+            TODO
+        '''
         geo = None
 
-        # Check the data type
+        # check data format
         if (type(data) == type({})):
             geo = data
         elif (type(data) == type('')):
             geo = json.loads(data)
         else:
-            # Data type is not valid
             raise UnsupportedDataTypeError(
                 'Provided data type {0} is unsupported'.format(type(data)))
 
-        # Check response status
-        if (geo['status'] is not 'OK'):
-            try:
-                err_msg = geo['error_message']
-                status = geo['status']
-            except KeyError:
-                # Shouldn't be the case, but.. Only option to happen so is 
-                # the change in Google geo API.
-                raise RequestError('request error')
-            finally:
-                raise RequestError('status: {0}, error message: {1}'.format(
-                    err_msg, status))
-
-        self.address_components = None
-        self.formatted_address = None
-        self.geometry = None
-        self.place_id = None
-        self.types = None
+        # check response status
+        if (geo['status'] != Status.OK.name):
+            for s in Status:
+                if (geo['status'] == s.name):
+                    raise Status.exception_pool[s.name]()

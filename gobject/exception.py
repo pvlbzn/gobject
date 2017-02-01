@@ -1,7 +1,7 @@
 '''exception.py
 
 Google API errors:
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
     - ZeroResultsError
     - OverQueryLimitError
     - RequestDeniedError
@@ -17,7 +17,7 @@ Note: docstring is needed, despite that explanation mostly duplicated
 
 
 Gobject errors:
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
     - UnsupportedDataTypeError
 '''
 
@@ -70,6 +70,42 @@ class UnknownError(Exception):
 
 
 class Status(Enum):
+    '''Enumerable for exceptions which can be received from Google geocode API.
+
+    Standard usecase is just to access class members like in static class:
+        Status.STATUS_NAME
+    for this statement you do not need class instance. Another usecase must
+    be performed with class instance. __init__ initializes Status instance
+    with dictionary of exceptions, such that key is exeption string as it
+    received from Google API (e.g. "REQUEST_DENIED") and value is a class
+    which stands for this status string.
+
+    Example:
+    ~~~~~~~~
+        We have responce from Google API stored in "data" variable. Data
+        is a dictionary with 2 members: result and status.
+
+        >>> data["status"] = "UNKNOWN_ERROR"
+        
+        >>> for status in Status:
+        >>> ....print(status.name, status.value)
+
+        OK 1
+        ZERO_RESULTS 2
+        OVER_QUERY_LIMIT 3
+        REQUEST_DENIED 4
+        INVALID_REQUEST 5
+        UNKNOWN_ERROR 6
+        
+        >>> for status in Status:
+        ...   if (data['status'] == status.name):
+        ...     err = Status(status.value).exception_pool[status.name]
+        ...     raise err(err.msg)
+
+        Traceback (most recent call last):
+        File "<stdin>", line 4, in <module>
+        gobject.exception.UnknownError: Server error. Try again.
+    '''
     OK = 1
     ZERO_RESULTS = 2
     OVER_QUERY_LIMIT = 3
@@ -77,7 +113,7 @@ class Status(Enum):
     INVALID_REQUEST = 5
     UNKNOWN_ERROR = 6
 
-    def __init__(self, status):
+    def __init__(self, val=1):
         self.exception_pool = {
             'ZERO_RESULTS': ZeroResultsError,
             'OVER_QUERY_LIMIT': OverQueryLimitError,
