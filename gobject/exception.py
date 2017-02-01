@@ -1,6 +1,7 @@
 '''exception.py
 
-Container for API errors. Google API errors:
+Google API errors:
+~~~~~~~~~~~~~~~~~
     - ZeroResultsError
     - OverQueryLimitError
     - RequestDeniedError
@@ -13,7 +14,14 @@ of Google geo API JSON response, it counterparts to result container.
 Note: docstring is needed, despite that explanation mostly duplicated
       in msg class variable because of various helpers in code editors,
       sometimes they show docstring on hover.
+
+
+Gobject errors:
+~~~~~~~~~~~~~~
+    - UnsupportedDataTypeError
 '''
+
+from enum import Enum
 
 
 class ZeroResultsError(Exception):
@@ -70,7 +78,18 @@ class Status(Enum):
     UNKNOWN_ERROR = 6
 
     def __init__(self, status):
-        self.exception_pool = [
-            ZeroResultsError, OverQueryLimitError, RequestDeniedError,
-            InvalidRequestError, UnknownError
-        ]
+        self.exception_pool = {
+            'ZERO_RESULTS': ZeroResultsError,
+            'OVER_QUERY_LIMIT': OverQueryLimitError,
+            'REQUEST_DENIED': RequestDeniedError,
+            'INVALID_REQUEST': InvalidRequestError,
+            'UNKNOWN_ERROR': UnknownError
+        }
+
+
+class UnsupportedDataTypeError(Exception):
+    '''Unsupported data error exception.
+
+    Raised when data type / structure is not suitable for the procedure.
+    '''
+    pass
