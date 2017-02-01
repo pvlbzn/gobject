@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class Gobject(object):
     '''Python object representation of the Google geo API response.'''
 
@@ -97,18 +100,71 @@ class Gobject(object):
         self.types = None
 
 
+class ZeroResultsError(Exception):
+    '''ZERO_RESULTS exception.
+    
+    Indicates that the geocode was successful but returned no results.
+    This may occur if the geocoder was passed a non-existent address.
+    '''
+    # duplicate is needed because of features of some code editors such
+    # as show docstring on hower.
+    msg = ('The geocode was successful but returned no results.'
+           ' This may occur if the geocoder was passed'
+           ' a non-existent address.')
+
+
+class OverQueryLimitError(Exception):
+    '''OVER_QUERY_LIMIT exception.
+
+    Indicates that you are over your quota.
+    '''
+    msg = 'Over quota.'
+
+
+class RequestDeniedError(Exception):
+    '''REQUEST_DENIED exception.
+
+    Indicates that your request was denied.
+    '''
+    msg = 'Request denied'
+
+
+class InvalidRequestError(Exception):
+    '''INVALID_REQUEST exception.
+
+    Generally indicates that the query (address, components or lat:lng)
+    is missing.
+    '''
+    msg = 'Query (address, components, lat, lng) is missing'
+
+
+class UnknownError(Exception):
+    '''UNKNOWN_ERROR exception.
+
+    Indicates that the request could not be processed due to a server error.
+    The request may succeed if you try again.
+    '''
+    msg = 'Server error. Try again.'
+
+
 class UnsupportedDataTypeError(Exception):
     '''Unsupported data error exception.
     
     Raised when data type / structure is not suitable for the procedure.
     '''
-    pass
+    msg = 'Unsupported data structure'
 
 
-class RequestError(Exception):
-    '''Request error exception.
-    
-    Raised when API request returns error. Error message from API should
-    explain particular problem. For example: "The provided API key is invalid."
-    '''
-    pass
+class Status(Enum):
+    OK = 1
+    ZERO_RESULTS = 2
+    OVER_QUERY_LIMIT = 3
+    REQUEST_DENIED = 4
+    INVALID_REQUEST = 5
+    UNKNOWN_ERROR = 6
+
+    def __init__(self, status):
+        self.exception_pool = [
+            ZeroResultsError, OverQueryLimitError, RequestDeniedError,
+            InvalidRequestError, UnknownError
+        ]
