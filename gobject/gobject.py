@@ -1,5 +1,7 @@
 '''gobject.py'''
 
+import json
+
 from .exception import Status, UnsupportedDataTypeError
 
 
@@ -92,3 +94,34 @@ class Gobject(object):
             for s in Status:
                 if (geo['status'] == s.name):
                     raise Status.exception_pool[s.name]()
+
+        geo = geo['results'][0]
+
+        self.address_components = self._parse_addr(geo['address_components'])
+        self.formatted_address = geo['formatted_address']
+        self.bounds = self._parse_geopair(geo['geometry']['bounds'])
+        self.location = self._parse_location(geo['geometry']['location'])
+        self.viewport = self._parse_geopair(geo['geometry']['viewport'])
+        self.location_type = geo['geometry']['location_type']
+        self.place_id = geo['place_id']
+        self.types = geo['types']
+
+    def _parse_addr(self, data):
+        res = []
+
+        for addr in data:
+            res.append(
+                AddressComponent(addr['long_name'], addr['short_name'], addr[
+                    'types']))
+
+        return res
+
+    def _parse_geopair(self, data):
+        return GeoPair(data['northeast'], data['southwest'])
+
+    def _parse_location(self, data):
+        return Location(data)
+
+    def serialize(self, geo):
+        '''Inverse of _parse'''
+        pass
