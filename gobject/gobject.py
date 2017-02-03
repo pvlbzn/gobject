@@ -22,6 +22,9 @@ class Location(object):
         else:
             return False
 
+    def __dict__(self):
+        return {'lat': self.lat, 'lng': self.lng}
+
 
 class AddressComponent(object):
     def __init__(self, long_name, short_name, types):
@@ -42,6 +45,13 @@ class AddressComponent(object):
             return True
         else:
             return False
+
+    def __dict__(self):
+        return {
+            'long_name': self.long_name,
+            'short_name': self.short_name,
+            'types': self.types
+        }
 
 
 class GeoPair(object):
@@ -68,9 +78,15 @@ class GeoPair(object):
         else:
             return False
 
+    def __dict__(self):
+        return {
+            'northeast': self.northeast.__dict__(),
+            'southwest': self.southwest.__dict__()
+        }
+
 
 class Gobject(object):
-    def __init__(self, data):
+    def __init__(self, data=None):
         '''
         Args:
             data: google geoservice API response in form of JSON string or object
@@ -122,6 +138,33 @@ class Gobject(object):
     def _parse_location(self, data):
         return Location(data)
 
-    def serialize(self, geo):
-        '''Inverse of _parse'''
+    def serialize(self):
+        '''Inverse the data back to its initial JSON format.
+        
+        Serialize is an inverse function on object, it maps object back
+        to initial data format. That makes Gobject instance behave like
+        a bijecive function.
+        '''
         pass
+
+    def __repr__(self):
+        # Get representation of each component.
+        components = []
+        for component in self.address_components:
+            components.append(component.__repr__())
+
+        addr = '<<address_components: {}>, '.format(components)
+        fmt = '<formatted_address: {0}>, '.format(self.formatted_address)
+        geo = '<geometry: <bounds: {0}>, '.format(self.bounds)
+        loc = '<location:{0}>, '.format(self.location)
+        loct = '<location_type: {0}>, '.format(self.location_type)
+        view = '<viewport: {0}>>, '.format(self.viewport)
+        pid = '<place_id: {0}>, '.format(self.place_id)
+        types = '<types: {0}>>'.format(self.types)
+
+        return addr + fmt + geo + loc + loct + view + pid + types
+
+    def __dict__(self):
+        components = []
+        for component in self.address_components:
+            components.append(component.__dict__())
