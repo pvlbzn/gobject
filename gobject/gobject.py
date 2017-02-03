@@ -145,7 +145,7 @@ class Gobject(object):
         to initial data format. That makes Gobject instance behave like
         a bijecive function.
         '''
-        pass
+        return self.__dict__()
 
     def __repr__(self):
         # Get representation of each component.
@@ -168,3 +168,19 @@ class Gobject(object):
         components = []
         for component in self.address_components:
             components.append(component.__dict__())
+
+        return {
+            'results': [{
+                'address_components': components,
+                'formatted_address': self.formatted_address,
+                'geometry': {
+                    'bounds': self.bounds.__dict__(),
+                    'location': self.location.__dict__(),
+                    'location_type': self.location_type,
+                    'viewport': self.viewport.__dict__()
+                },
+                'place_id': self.place_id,
+                'types': self.types
+            }],
+            "status": Status(1).name
+        }
