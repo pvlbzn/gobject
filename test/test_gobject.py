@@ -1,5 +1,7 @@
 import pytest
 
+import json
+
 from gobject import gobject as geo
 from gobject import exception
 
@@ -94,3 +96,33 @@ class TestGobject:
     def test_wrong_initialization(self):
         with pytest.raises(exception.UnsupportedDataTypeError):
             gobject = geo.Gobject(123)
+
+    def test_zero_results_exception(self):
+        with pytest.raises(exception.ZeroResultsError):
+            geo.Gobject({'status': 'ZERO_RESULTS'})
+
+    def test_over_query_limit_exception(self):
+        with pytest.raises(exception.OverQueryLimitError):
+            geo.Gobject({'status': 'OVER_QUERY_LIMIT'})
+
+    def test_request_denied_exception(self):
+        with pytest.raises(exception.RequestDeniedError):
+            geo.Gobject({'status': 'REQUEST_DENIED'})
+
+    def test_invalid_request_exception(self):
+        with pytest.raises(exception.InvalidRequestError):
+            geo.Gobject({'status': 'INVALID_REQUEST'})
+
+    def test_unknown_error_exception(self):
+        with pytest.raises(exception.UnknownError):
+            geo.Gobject({'status': 'UNKNOWN_ERROR'})
+
+    def test_inverse(self):
+        '''Bijective function test.
+
+        It checks wether data can be mapped back or not. If test is green
+        then the whole object works as needed, bijection exists, data is safe.
+        '''
+        gobject = geo.Gobject(self.data)
+        json_data = json.loads(self.data)
+        assert gobject.serialize() == json_data
