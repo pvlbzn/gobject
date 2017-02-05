@@ -123,7 +123,8 @@ class Status(Enum):
         }
 
     def raise_exception(self):
-        raise self.exception_pool[self.name]
+        exc = self.exception_pool[self.name]
+        raise exc(exc.msg)
 
 
 class UnsupportedDataTypeError(Exception):
