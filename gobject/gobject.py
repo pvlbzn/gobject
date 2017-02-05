@@ -118,7 +118,7 @@ class Gobject(object):
         if (geo['status'] != Status.OK.name):
             for s in Status:
                 if (geo['status'] == s.name):
-                    raise Status.exception_pool[s.name]()
+                    raise Status(s).raise_exception()
 
         geo = geo['results'][0]
 

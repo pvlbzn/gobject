@@ -122,6 +122,9 @@ class Status(Enum):
             'UNKNOWN_ERROR': UnknownError
         }
 
+    def raise_exception(self):
+        raise self.exception_pool[self.name]
+
 
 class UnsupportedDataTypeError(Exception):
     '''Unsupported data error exception.
