@@ -1,0 +1,49 @@
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "Special Capital Region of Jakarta",
+               "short_name" : "Special Capital Region of Jakarta",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "Indonesia",
+               "short_name" : "ID",
+               "types" : [ "country", "political" ]
+            }
+         ],
+         "formatted_address" : "Special Capital Region of Jakarta, Indonesia",
+         "geometry" : {
+            "bounds" : {
+               "northeast" : {
+                  "lat" : -5.1843219,
+                  "lng" : 106.972825
+               },
+               "southwest" : {
+                  "lat" : -6.3708331,
+                  "lng" : 106.3831259
+               }
+            },
+            "location" : {
+               "lat" : -6.1744651,
+               "lng" : 106.822745
+            },
+            "location_type" : "APPROXIMATE",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : -6.0886599,
+                  "lng" : 106.972825
+               },
+               "southwest" : {
+                  "lat" : -6.370829899999999,
+                  "lng" : 106.686211
+               }
+            }
+         },
+         "place_id" : "ChIJnUvjRenzaS4RILjULejFAAE",
+         "types" : [ "administrative_area_level_1", "political" ]
+      }
+   ],
+   "status" : "OK"
+}

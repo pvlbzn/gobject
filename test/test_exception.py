@@ -5,10 +5,6 @@ from gobject import exception
 # mock the data
 data = {'result': [], 'status': ''}
 
-#
-# Test general correctness of the module
-#
-
 
 def test_ok_status():
     data['status'] = 'OK'
@@ -38,11 +34,6 @@ def test_invalid_request_status():
 def test_unknown_error_status():
     data['status'] = 'UNKNOWN_ERROR'
     assert data['status'] == exception.Status.UNKNOWN_ERROR.name
-
-
-#
-# Test how it works
-#
 
 
 def test_raise_zero_results_exception():

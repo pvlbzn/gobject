@@ -5,6 +5,15 @@ import json
 from .exception import Status, UnsupportedDataTypeError
 
 
+def loads(data):
+    '''
+
+    Returns:
+        Gobject instance initialized with data
+    '''
+    pass
+
+
 class Location(object):
     def __init__(self, coordinates):
         self.lat = coordinates['lat']
@@ -66,8 +75,8 @@ class GeoPair(object):
         self.southwest = Location(southwest)
 
     def __repr__(self):
-        return 'northeast: {0}, southwest: {1}'.format(self.northeast,
-                                                       self.southwest)
+        return '<northeast: {0}, southwest: {1}>'.format(self.northeast,
+                                                         self.southwest)
 
     def __eq__(self, other):
         i = (self.northeast == other.northeast)
@@ -86,7 +95,7 @@ class GeoPair(object):
 
 
 class Gobject(object):
-    def __init__(self, data=None):
+    def __init__(self, data):
         '''
         Args:
             data: google geoservice API response in form of JSON string or object

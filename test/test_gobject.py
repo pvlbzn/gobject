@@ -1,6 +1,7 @@
 import pytest
 
 from gobject import gobject as geo
+from gobject import exception
 
 
 class TestLocation:
@@ -21,12 +22,14 @@ class TestLocation:
         other_loc = geo.Location({'lat': 37.010848, 'lng': -122.030796})
         assert self.loc != other_loc
 
+    def test_dict(self):
+        assert self.loc.__dict__() == {'lat': self.lat, 'lng': self.lng}
+
 
 class TestAddressComponent:
     long_name = 'Santa Cruz de Tenerife'
     short_name = 'Santa Cruz de Tenerife'
     types = ['locality', 'political']
-
     addr = geo.AddressComponent(long_name, short_name, types)
 
     def test_object(self):
@@ -35,9 +38,10 @@ class TestAddressComponent:
                 self.addr.types == self.types)
 
     def test_representation(self):
-        expected = ('<long name: Santa Cruz de Tenerife,',
+        expected = ('<long name: Santa Cruz de Tenerife,'
                     ' short name: Santa Cruz de Tenerife,'
                     ' types: [\'locality\', \'political\']>')
+        assert self.addr.__repr__() == expected
 
     def test_equality(self):
         assert self.addr == self.addr
@@ -45,3 +49,48 @@ class TestAddressComponent:
     def test_inequality(self):
         other_addr = geo.AddressComponent('long_name', 'short_name', [1, 2])
         assert self.addr != other_addr
+
+    def test_dict(self):
+        assert self.addr.__dict__() == {
+            'long_name': self.long_name,
+            'short_name': self.short_name,
+            'types': self.types
+        }
+
+
+class TestGeoPair:
+    ne = {'lat': 37.010848, 'lng': -122.030796}
+    sw = {'lat': 32.234532, 'lng': -123.123442}
+    geopair = geo.GeoPair(ne, sw)
+
+    def test_object_equality(self):
+        assert (self.geopair.northeast.lat == self.ne['lat'] and
+                self.geopair.northeast.lng == self.ne['lng'] and
+                self.geopair.southwest.lat == self.sw['lat'] and
+                self.geopair.southwest.lng == self.sw['lng'])
+
+    def test_representation(self):
+        expected = ('<northeast: <lat: 37.010848 ; lng: -122.030796>,'
+                    ' southwest: <lat: 32.234532 ; lng: -123.123442>>')
+
+    def test_equality(self):
+        assert self.geopair == (geo.GeoPair(self.ne, self.sw))
+
+    def test_dict(self):
+        assert self.geopair.__dict__() == {
+            'northeast': self.ne,
+            'southwest': self.sw
+        }
+
+
+class TestGobject:
+    data = None
+
+    with open('test/mock_response.json', 'r') as f:
+        data = f.read()
+
+    gobject = None
+
+    def test_wrong_initialization(self):
+        with pytest.raises(exception.UnsupportedDataTypeError):
+            gobject = geo.Gobject(123)
