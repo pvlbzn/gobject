@@ -5,13 +5,25 @@ import json
 from .exception import Status, UnsupportedDataTypeError
 
 
-def loads(data):
-    '''
+def load(data):
+    '''Transform Google Geocode API JSON response into Gobject.
+
+    This operation is reversable using serialize() function, or through
+    gobject_instance.serialize() API method.
 
     Returns:
         Gobject instance initialized with data
     '''
-    pass
+    return Gobject(data)
+
+
+def serialize(obj):
+    '''Transform Gobject instance into Google Geocode JSON response.
+
+    Returns:
+        Serialized object to dictionary
+    '''
+    return Gobject.serialize()
 
 
 class Location(object):
@@ -96,12 +108,10 @@ class GeoPair(object):
 
 class Gobject(object):
     def __init__(self, data):
-        '''
+        '''Google Geocode API wrapper.
+
         Args:
             data: google geoservice API response in form of JSON string or object
-        
-        Raises:
-            TODO
         '''
         geo = None
 
