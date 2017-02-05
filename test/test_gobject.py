@@ -74,9 +74,14 @@ class TestGeoPair:
     def test_representation(self):
         expected = ('<northeast: <lat: 37.010848 ; lng: -122.030796>,'
                     ' southwest: <lat: 32.234532 ; lng: -123.123442>>')
+        assert self.geopair.__repr__() == expected
 
     def test_equality(self):
         assert self.geopair == (geo.GeoPair(self.ne, self.sw))
+
+    def test_inequality(self):
+        other_geopair = geo.GeoPair(self.sw, self.ne)
+        assert self.geopair != other_geopair
 
     def test_dict(self):
         assert self.geopair.__dict__() == {
