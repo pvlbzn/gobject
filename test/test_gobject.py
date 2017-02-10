@@ -131,3 +131,11 @@ class TestGobject:
         gobject = geo.Gobject(self.data)
         json_data = json.loads(self.data)
         assert gobject.serialize() == json_data
+
+    def test_equality(self):
+        gobject_x = geo.Gobject(self.data)
+
+        jdata = json.loads(self.data)
+        gobject_y = geo.Gobject(jdata)
+
+        assert gobject_x == gobject_y

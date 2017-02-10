@@ -203,3 +203,19 @@ class Gobject(object):
             }],
             "status": Status(1).name
         }
+
+    def __eq__(self, other):
+        addr = (self.address_components == other.address_components)
+        fmt_addr = (self.formatted_address == other.formatted_address)
+        bounds = (self.bounds == other.bounds)
+        loc = (self.location == other.location)
+        view = (self.viewport == other.viewport)
+        loc_t = (self.location_type == other.location_type)
+        p_id = (self.place_id == other.place_id)
+        types = (self.types == other.types)
+
+        if (addr and fmt_addr and bounds and loc and view and loc_t and p_id
+                and types):
+            return True
+
+        return False
