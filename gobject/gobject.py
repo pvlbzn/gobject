@@ -113,16 +113,12 @@ class Gobject(object):
         Args:
             data: google geoservice API response in form of JSON string or object
         '''
-        geo = None
 
-        # check data format
-        if (type(data) == type({})):
-            geo = data
-        elif (type(data) == type('')):
-            geo = json.loads(data)
-        else:
+        if (data.__class__ != {}.__class__ and data.__class__ != ''.__class__):
             raise UnsupportedDataTypeError(
                 'Provided data type {0} is unsupported'.format(type(data)))
+
+        geo = self._load_data(data)
 
         # check response status
         if (geo['status'] != Status.OK.name):
@@ -140,6 +136,12 @@ class Gobject(object):
         self.location_type = geo['geometry']['location_type']
         self.place_id = geo['place_id']
         self.types = geo['types']
+
+    def _load_data(self, data):
+        if (type(data) == {}.__class__):
+            return data
+        elif (type(data) == ''.__class__):
+            return json.loads(data)
 
     def _parse_addr(self, data):
         res = []
@@ -214,8 +216,8 @@ class Gobject(object):
         p_id = (self.place_id == other.place_id)
         types = (self.types == other.types)
 
-        if (addr and fmt_addr and bounds and loc and view and loc_t and p_id
-                and types):
+        if (addr and fmt_addr and bounds and loc and view and loc_t and
+                p_id and types):
             return True
 
         return False
