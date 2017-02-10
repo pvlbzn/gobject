@@ -35,10 +35,10 @@ class Location(object):
         return '<lat: {0} ; lng: {1}>'.format(self.lat, self.lng)
 
     def __eq__(self, other):
-        i = (self.lat == other.lat)
-        j = (self.lng == other.lng)
+        lat_diff = (self.lat == other.lat)
+        lng_diff = (self.lng == other.lng)
 
-        if (i and j):
+        if (lat_diff and lng_diff):
             return True
         else:
             return False
@@ -58,11 +58,11 @@ class AddressComponent(object):
             self.long_name, self.short_name, self.types)
 
     def __eq__(self, other):
-        i = (self.long_name == other.long_name)
-        j = (self.short_name == other.short_name)
-        k = (self.types == other.types)
+        long_name_diff = (self.long_name == other.long_name)
+        short_name_diff = (self.short_name == other.short_name)
+        types_diff = (self.types == other.types)
 
-        if (i and j and k):
+        if (long_name_diff and short_name_diff and types_diff):
             return True
         else:
             return False
@@ -91,10 +91,10 @@ class GeoPair(object):
                                                          self.southwest)
 
     def __eq__(self, other):
-        i = (self.northeast == other.northeast)
-        j = (self.southwest == other.southwest)
+        ne_diff = (self.northeast == other.northeast)
+        sw_diff = (self.southwest == other.southwest)
 
-        if (i and j):
+        if (ne_diff and sw_diff):
             return True
         else:
             return False
@@ -120,11 +120,7 @@ class Gobject(object):
 
         geo = self._load_data(data)
 
-        # check response status
-        if (geo['status'] != Status.OK.name):
-            for s in Status:
-                if (geo['status'] == s.name):
-                    raise Status(s).raise_exception()
+        self._check_status(geo['status'])
 
         geo = geo['results'][0]
 
@@ -142,6 +138,10 @@ class Gobject(object):
             return data
         elif (type(data) == ''.__class__):
             return json.loads(data)
+
+    def _check_status(self, status):
+        if status != Status.OK.name:
+            raise Status(Status[status]).raise_exception()
 
     def _parse_addr(self, data):
         res = []
@@ -216,8 +216,10 @@ class Gobject(object):
         p_id = (self.place_id == other.place_id)
         types = (self.types == other.types)
 
-        if (addr and fmt_addr and bounds and loc and view and loc_t and
-                p_id and types):
-            return True
+        res = (addr and fmt_addr and bounds and loc and view and loc_t and
+               p_id and types)
 
-        return False
+        if res:
+            return True
+        else:
+            return False
