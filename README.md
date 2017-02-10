@@ -1,3 +1,6 @@
+[![Test Coverage](https://codeclimate.com/github/pvlbzn/gobject/badges/coverage.svg)](https://codeclimate.com/github/pvlbzn/gobject/coverage)
+
+
 # Gobject
 Google Geocode API wrapper supercharged with Python Data Model,
 which makes Gobject behave like a first class citizen. 
@@ -51,7 +54,7 @@ True
 
 #### Errors
 
-Gobject handles all (5 kinds) errors which may occur in 'status' field of JSON
+Gobject handles all (5 kinds) errors which may occur in 'status' field of a JSON
 response from Google Geocode API.
 
 ```
@@ -71,7 +74,7 @@ Status.REQUEST_DENIED
 Status.INVALID_REQUEST
 Status.UNKNOWN_ERROR
 
-> # Friendly reminder: Read docstring in REPL can be done with pprint:
+> # Reminder: Read docstring in REPL can be done with pprint:
 > #     pprint(exception.Status.__doc__)
 
 ```
