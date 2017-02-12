@@ -6,50 +6,73 @@ Google Geocode API wrapper supercharged with Python Data Model,
 which makes Gobject behave like a first class citizen. 
 
 
+## Install
+
+```
+pip install gobject
+```
+
 ## Example
 
 _Assume we are working in Python REPL environement_
 
-#### General showcase
+Import modules: requests to make a request, json as a utility, gobject. Note that `gobject` dependency free library.
+It does not care about a source of JSON containing response from Google Geocode API.
 
 ```
-> # Get JSON response
-> response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address=Jakarta&key=YOUR_API_KEY')
+import gobject, requests, json
+```
 
-> # load() return initialized Gobject instance
-> obj = gobject.load(response.text)
+Get JSON response from Google API
 
-> # Lets take northeast bounds
-> obj.bounds.northeast
-> # REPL will return northeast bound representation
-<lat: -5.1843219 ; lng: 106.972825>
+```
+resp = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address=Jakarta&key=YOUR_API_KEY')
+resp
+> <Response [200]>
+```
 
-> obj.bounds.northeast.lat
--5.1843219
+We got the response from API, now lets initialize `gobject`. It can be done in two ways, first one is preffered.
 
-> len(obj.address_components)
-2
+```
+gobj = gobject.load(resp.text)
 
-> obj.address_components[0].long_name
-'Special Capital Region of Jakarta'
+# Or another way using the class Gobject
+gobj_alt = gobject.Gobject(resp.text)
+```
 
-> # Thanks to the data model we can use comparison operator
-> obj.bounds.northeast == obj.bounds.northeast
-True
-> obj.bounds.northeast == obj.bounds.southwest
-False
+Beeing a Pythonic, `gobject` leverages Python Data Model to be first-class citizen in your code.
 
-> # We can edit each and every data
-> obj.place_id = 'new place id'
-> obj.place_id
-'new place id'
+```
+gobj == gobj_alt
+> True
+```
 
-> # More over, Gobject can be serialized back. Function serialize() is the inverse
-> # function of load(). Thus, there exists bijection, which means that the data is safe.
-> # Convert JSON response string into a dictionary
-> original_response = json.loads(response.text)
-> original_response == obj.serialize()
-True
+Important feature: `gobject.load` has an inverse function `gobject.serialize`. There exists a _bijection_ relation.
+Wrap the data into an object, serialize it and compare to original data.
+
+```
+(gobject.load(resp.text)).serialize() == json.loads(resp.text)
+> True
+```
+
+`gobject` API follows Google Geocode API, just read Geocode docs and you will find it in Gobject too
+
+```
+gobj.bounds
+> <northeast: <lat: -5.1843219 ; lng: 106.972825>, southwest: <lat: -6.3708331 ; lng: 106.3831259>>
+
+gobj.bounds.northeast
+> <lat: -5.1843219 ; lng: 106.972825>
+
+gobj.bounds.northeast == gobj.bounds.southwest
+> False
+
+gobj.bounds.northeast = gobj.bounds.southwest
+gobj.bounds.northeast == gobj.bounds.southwest
+> True
+
+len(gobj.address_components)
+> 2
 ```
 
 #### Errors
@@ -57,28 +80,35 @@ True
 Gobject handles all (5 kinds) errors which may occur in 'status' field of a JSON
 response from Google Geocode API.
 
-```
-> # If something went wrong, exception with explanation will occur
-> data = {'results': [], 'status': 'INVALID_REQUEST'}
-...
-gobject.exception.InvalidRequestError: Query (address, components, lat, lng) is missing
-
-> # Status class is a modified Enum container which helps to manage exceptions.
-> # It is not trivial and covered in details in its docstring.
-> for s in exception.Status:
-...   print(s)
-Status.OK
-Status.ZERO_RESULTS
-Status.OVER_QUERY_LIMIT
-Status.REQUEST_DENIED
-Status.INVALID_REQUEST
-Status.UNKNOWN_ERROR
-
-> # Reminder: Read docstring in REPL can be done with pprint:
-> #     pprint(exception.Status.__doc__)
+Lets make a request with non-existent place, such as _Cappleble_.
 
 ```
+resp = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address=Cappleble&key=API_KEY')
+resp
+> <Response [200]>
+```
 
-## Tests
+And load its data into the `gobject`
 
-Coverage is > 90%. Run `py.test --cov`.
+```
+wobj = gobject.load(resp.text)
+> Traceback (most recent call last):
+> ...
+> gobject.exception.ZeroResultsError: The geocode was successful but returned no results.
+This may occur if the geocoder was passed a non-existent address.
+```
+
+Exception message says exactly what we did, the cause of it is a non-existent place.
+
+`gobject` supports all exceptions from Google API with their explanation messages.
+
+
+## Code Quality
+
+Code quality is measured by codeclimate, you can find badge on a first line.
+
+To test the code run:
+
+```
+py.test
+```
